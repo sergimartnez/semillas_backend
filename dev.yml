@@ -38,3 +38,15 @@ services:
     ports:
       - "8025:8025"
 
+  ejabberd:
+    image: rroemhild/ejabberd
+    ports:
+      - 5222:5222
+      - 5269:5269
+      - 5280:5280
+    environment:
+      - ERLANG_NODE=ejabberd
+      - XMPP_DOMAIN=semillasocial.org
+      - EJABBERD_ADMINS=admin@semillasocial.org
+      - EJABBERD_USERS=admin@semillasocial.org:password4321
+
