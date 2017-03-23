@@ -11,9 +11,16 @@ from django.core.management.base import BaseCommand
 
 from semillas_backend.users.factory import UserFactory
 
+from semillas_backend.users.models import User
+
 from services.factory import ServiceFactory, CategoryFactory
 from services.factory import categories
+
 from services.models import Category
+
+from profile_views.factory import ProfileViewsFactory
+
+from profile_views.models import ProfileViews
 
 from wallet.models import Wallet, Transaction
 
@@ -24,13 +31,24 @@ class Command(BaseCommand):
     fake = Factory.create()
 
     def handle(self, *args, **kwargs):
-        UserFactory.create_batch(size=10)
+        users = UserFactory.create_batch(size=10)
         # CategoryFactory.create_batch(size=20)
 
         Category.objects.all().delete()
         for i in range(len(categories)):
             CategoryFactory(name=categories[i],order=i)
         ServiceFactory.create_batch(size=50)
+
+        # Create some profile historic views for testing
+        for user in users:
+            for j in range(10):
+                random_ind = randint(0, len(users) - 2)
+                new = ProfileViews.objects.create(
+                    source_user=user,
+                    target_user=User.objects.exclude(id=user.id)[random_ind],
+                )
+                new.save() 
+        
 
         # Create transactions
         count = Wallet.objects.count()
