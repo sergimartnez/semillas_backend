@@ -65,6 +65,7 @@ LOCAL_APPS = (
     'wallet',
     'webapp',
     'rest_framework_word_filter',
+    'profile_views',
     # Your stuff: custom apps go here
 )
 

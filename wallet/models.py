@@ -13,10 +13,6 @@ from .errors import InsufficientBalance
 
 @python_2_unicode_compatible
 class Wallet(models.Model):
-    """
-    Represents an advert of a user on the platform. Its intended to be
-    exchangeable for seeds and mainly geolocated oriented (TODOs!)
-    """
     uuid = models.UUIDField(default=uuid4, editable=False, unique=True)
 
     owner = models.OneToOneField(
