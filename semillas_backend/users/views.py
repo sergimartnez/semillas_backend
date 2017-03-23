@@ -11,6 +11,7 @@ from rest_framework import permissions
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView
 
+from profile_views.models import ProfileViews
 
 from .models import User
 from .serializers import UserSerializer
@@ -62,14 +63,24 @@ class UserList(generics.ListAPIView):
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAdminUser,)
 
-
+# used --> View user's profile --> create entry in profile_views table
 class UserDetail(generics.RetrieveUpdateAPIView):
     """ access: curl http://0.0.0.0:8000/api/v1/user/2/
     """
-    queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated, IsOwnerOrReadOnly)
-    lookup_field = 'uuid'
+    def get_queryset(self):
+        if 'uuid' in self.kwargs:
+            pk = self.kwargs['uuid']
+            target_user = User.objects.get(uuid=pk)
+            ProfileViews.objects.create(
+                source_user=self.request.user,
+                target_user=target_user,
+            )
+            return target_user
+        
+        return Response("The user was not found!", status=status.HTTP_404_NOT_FOUND)
+
 
 
 class FacebookLogin(SocialLoginView):
